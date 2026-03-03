@@ -1,0 +1,169 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="LearningApp.Site1" %>
+
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <title>EduStream LMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f4f7f6; overflow-x: hidden; }
+
+        /* SIDEBAR - Final Layout */
+        .sidebar { 
+            width: 260px; 
+            background-color: #1e293b; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.closed { left: -260px; }
+
+        /* Sidebar Header with Toggle Button inside */
+        .sidebar-header { 
+            padding: 20px; 
+            background: #0f172a; 
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .sidebar-header h2 { color: #38bdf8; font-size: 20px; }
+
+        #toggle-btn-sidebar {
+            background: #38bdf8;
+            color: #1e293b;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Nav Menu Scrollable */
+        .nav-menu { flex-grow: 1; padding: 15px 10px; overflow-y: auto; }
+        .nav-menu ul { list-style: none; }
+        .nav-menu a { color: #94a3b8; text-decoration: none; padding: 10px 15px; display: block; border-radius: 8px; font-size: 14px; transition: 0.3s; }
+        .nav-menu a:hover { background: #334155; color: #38bdf8; }
+        
+        .section-title { font-size: 10px; color: #64748b; font-weight: bold; margin: 20px 0 8px 15px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* MAIN PANEL */
+        .main-panel { 
+            margin-left: 260px; 
+            min-height: 100vh;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .main-panel.full-width { margin-left: 0; }
+
+        /* OPEN BUTTON (Tab dikhega jab sidebar band ho) */
+        #open-btn {
+            position: fixed;
+            left: 10px;
+            top: 15px;
+            z-index: 999;
+            background: #1e293b;
+            color: #38bdf8;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* Initially hidden */
+        }
+
+        .navbar { 
+            height: 70px; 
+            background: white; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            padding: 0 30px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .page-content { padding: 40px; }
+    </style>
+    <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <button type="button" id="open-btn" onclick="toggleSidebar()">☰</button>
+
+        <aside class="sidebar" id="mySidebar">
+            <div class="sidebar-header">
+                <h2>EduStream</h2>
+                <button type="button" id="toggle-btn-sidebar" onclick="toggleSidebar()">«</button>
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="Dashboard.aspx">🏠 Dashboard</a></li>
+
+                    <asp:PlaceHolder ID="phAdmin" runat="server">
+                        <li class="section-title">ADMIN MANAGEMENT</li>
+                        <li><a href="ApproveReject.aspx">✅ Approve / Reject</a></li>
+                        <li><a href="ManageUsers.aspx">👥 Manage Users</a></li>
+                        <li><a href="ManageCategories.aspx">📂 Manage Categories</a></li>
+                        <li><a href="ManageCertificates.aspx">🎓 Manage Certificates</a></li>
+                        <li><a href="PaymentHistory.aspx">💳 Payment History</a></li>
+                    </asp:PlaceHolder>
+
+                    <asp:PlaceHolder ID="phUser" runat="server">
+                        <li class="section-title">STUDENT MENU</li>
+                        <li><a href="MyCourses.aspx">📚 My Courses</a></li>
+                        <li><a href="Wishlist.aspx">⭐ Wishlist</a></li>
+                        <li><a href="CourseCompletion.aspx">✔️ Course Completion</a></li>
+                        <li><a href="QuizPlay.aspx">🎮 Quiz Play</a></li>
+                        <li><a href="Certificates.aspx">📜 Results & Certificates</a></li>
+                        <li><a href="MyPayments.aspx">💰 View Payments</a></li>
+                        
+                        <li class="section-title">INSTRUCTOR</li>
+                        <li><a href="CreateCourse.aspx" style="color:#38bdf8;">➕ Be an Instructor</a></li>
+                    </asp:PlaceHolder>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="main-panel" id="mainPanel">
+            <header class="navbar">
+                <div style="font-weight: bold; color:#1e293b;">LMS Portal</div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <asp:Label ID="lblUserName" runat="server" Font-Bold="true" Text="Ankush"></asp:Label>
+                    <asp:LinkButton ID="btnLogOut" runat="server" ForeColor="Red" OnClick="btnLogOut_Click" style="text-decoration:none;">Logout</asp:LinkButton>
+                </div>
+            </header>
+
+            <main class="page-content">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+            </main>
+        </div>
+    </form>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("mySidebar");
+            const mainPanel = document.getElementById("mainPanel");
+            const openBtn = document.getElementById("open-btn");
+
+            sidebar.classList.toggle("closed");
+            mainPanel.classList.toggle("full-width");
+
+            // Agar sidebar closed hai toh "Open (☰)" button dikhao
+            if (sidebar.classList.contains("closed")) {
+                openBtn.style.display = "block";
+            } else {
+                openBtn.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
